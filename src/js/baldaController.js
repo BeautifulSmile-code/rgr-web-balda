@@ -8,12 +8,13 @@ class Controller {
     }
 
     init() {
-        this.baldaView.init();
-        this.baldaModel.init(this.baldaView.removeClick, this.baldaView.addClick);
+        this.baldaView.init(this.baldaModel);
+        this.baldaModel.init(this.baldaView.removeClick, this.baldaView.addClick, this.needRendering);
         this.needRendering();
     };
 
-    needRendering(){
+    needRendering = () => {
+        this.baldaView.change(this.baldaModel);
         //this.baldaView.render(baldaModel.objs);
     };
 }
