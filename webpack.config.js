@@ -30,6 +30,14 @@ module.exports = {
                         {
                             'plugins': ['@babel/plugin-proposal-class-properties']}]
                 }
+            },
+            {
+                test: /\.mp3$/,
+                include: path.resolve(__dirname, 'src/audio'),
+                loader: 'file-loader',
+                options: {
+                    name: '/public/music/[name].[ext]'
+                }
             }
         ],
     },

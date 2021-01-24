@@ -2,24 +2,24 @@ export class Model {
     constructor() {
         this.chars = 'абвгдежзийклмнопрстуфхцчшщъыьэюя';
         this.answers = [];
-        this.bakArr = new Array(25);
+        this.bakArr = new Array(25).fill('');
         this.track = [];
         this.numChar = null;
         this.scorePlayer1 = [];
         this.scorePlayer2 = [];
         this.result = '';
         this.error = '';
-        this.move = 1;
+        this.move = 0;
         this.removeClick = null;
         this.addClick = null;
         this.letters = new Array(25).fill("");
     }
 
-
-    init = (removeClickFunc, addClickFunc, changeFunc) => {
+    init = (removeClickFunc, addClickFunc, changeFunc, startViewFunc) => {
         this.removeClick = removeClickFunc;
         this.addClick = addClickFunc;
         this.change = changeFunc;
+        this.startView = startViewFunc;
     }
 
     newGame = () => {
@@ -47,13 +47,13 @@ export class Model {
             for (let i = 0; i < this.scorePlayer2.length; i++)
                 nBot += this.answers[this.scorePlayer2[i]].length;
             if (nPlayer === nBot)
-                alert('Ничья');
+                this.error = "Ничья";
             else if (nPlayer > nBot)
-                alert('Победил первый игрок!!! :)');
+                this.error = "Победил первый игрок!!! :)";
             else
-                alert('Победил второй игрок!!! :)');
-            // удаляем событие ход
-            this.removeClick('test', this.validate);
+                this.error = "Победил второй игрок!!! :)";
+            this.removeClick('turn', this.validate);
+            this.change();
             return true;
         } else {
             return false;
@@ -71,6 +71,7 @@ export class Model {
     }
 
     validate = async () => {
+        this.result='';
         if (this.numChar !== null && this.track.indexOf(this.numChar) === -1) {
             this.error = "Слово должно содержать добавленную букву";
             this.track = [];
@@ -87,18 +88,16 @@ export class Model {
             return false;
         }
 
-        let flag = await this.findWord(result);
-
+        let flag;
+        if (result !== '') flag = await this.findWord(result);
+        else flag = false;
         if (flag) {
-            // вешаем обработчик выбора буквы
+
             this.addClick('content', this.setChar);
-            // удаляем задание пути
             this.removeClick('content', this.setTrack);
-             // удаляем отмена
             this.removeClick('cancel', this.cancel);
             this.track = [];
             this.numChar = null;
-            // добавляем слово в ответы
 
             this.answers.push(result);
             if (this.move > 0)
@@ -106,7 +105,7 @@ export class Model {
             else
                 this.scorePlayer2.push(this.answers.length - 1);
             this.move *= -1;
-
+            this.error = "";
 
         } else {
             this.track = [];
@@ -117,6 +116,7 @@ export class Model {
             else
                 this.error = 'Выберите слово';
         }
+
         this.change();
         this.endGame();
     }
@@ -154,57 +154,40 @@ export class Model {
             this.removeClick('keyboard', this.select);
             this.select = (e) => {
                 if (e.target.nodeName === "BUTTON") {
-                    // ячейке таблицы присвоить выбраную букву на клавиатуре
                     this.letters[event.target.name] = e.target.firstChild.nodeValue;
-                    // номер выбранной букве в таблице (подсвечивается красным)
                     this.numChar = parseInt(event.target.name);
-                    // рендерим
-                    this.change();
-                    // скрывем клавиатуру
-                    document.getElementById('substrate').className = 'hide';
+                    this.showKey=false;
                     this.removeClick('content', this.setChar);
-                    // вешаем обработчик задания пути
                     this.addClick('content', this.setTrack);
-                    // удаляем обработчик выбора буквы
+                    this.change();
                 }
             };
-            // вешаем обработчик события нажатия кнопки на клавиатуре
             this.addClick('keyboard', this.select);
-            // вешаем обработчик отмены
-
             this.addClick('cancel', this.cancel);
-            // показываем клавиатуру
-            document.getElementById('substrate').className = 'show';
+
+            this.showKey=true;
+            this.change();
         }
     }
     cancel = () => {
         this.getBak();
         this.track = [];
-        // вешаем обработчик выбора буквы
         this.addClick('content', this.setChar);
-        // удаляем обработчик задания пути
         this.removeClick('content', this.setTrack);
         this.result = '';
         this.error = '';
         this.change();
     }
     start = () => {
+        this.move = 1;
         this.answers = ['балда'];
         this.letters[10] = this.answers[0][0];
         this.letters[11] = this.answers[0][1];
         this.letters[12] = this.answers[0][2];
         this.letters[13] = this.answers[0][3];
         this.letters[14] = this.answers[0][4];
-        // удаляем событие Старт
-        this.removeClick('start', this.start);
-        // вешаем событие Заново
-        document.getElementById('start').firstChild.nodeValue = 'Заново';
-        this.addClick('start', this.newGame);
-        // вешаем обработчик выбора буквы
-        this.addClick('content', this.setChar);
-        // вешаем обработчик проверки слова (Ход)
-        this.addClick('turn', this.validate);
-        this.change();
+        this.setBak();
+        this.startView();
     }
 
     getDictionaryWord = async (word) => {
@@ -218,7 +201,6 @@ export class Model {
         }
     }
 
-    // поиск целого слова в словаре
     findWord = async (word) => {
         let rez = await this.getDictionaryWord(word);
         console.log(word);

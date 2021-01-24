@@ -8,32 +8,48 @@
 </head>
 
 <body>
+<audio id="audio"></audio>
+<button id="music">Включить музыку</button>
 <div class="context">
     <div class="block">
         <div>
             <h1>Балда</h1>
         </div>
-        <div id="result"></div>
-        <!--<div style="clear: both"></div>-->
-        <div id="error"></div>
+        <div class="info" id="error"></div>
+        <div class="info" id="result"></div>
     </div>
+</div>
+<div class="playArena">
+    <div class="player">
+        <strong id="player1">Первый игрок: <span id="player1-score">0</span></strong>
+        <div id="player1-words"></div>
+    </div>
+
     <div id="content"></div>
+
+    <div class="player">
+        <strong id="player2">Второй игрок: <span id="player2-score">0</span></strong>
+        <div id="player2-words"></div>
+    </div>
+</div>
+<div class="context">
     <div>
         <button id="start">Старт</button>
-        <button id="turn" id="test">Ход</button>
+        <button id="turn">Ход</button>
         <button id="cancel">Отмена</button>
     </div>
+    <!--
     <div class="block">
         <div class="column-left">
-            <strong>Первый игрок: <span id="player1-score">0</span></strong>
+            <strong id="player1">Первый игрок: <span id="player1-score">0</span></strong>
             <div id="player1-words"></div>
         </div>
         <div class="column-right">
-            <strong>Второй игрок: <span id="player2-score">0</span></strong>
+            <strong id="player2">Второй игрок: <span id="player2-score">0</span></strong>
             <div id="player2-words"></div>
         </div>
     </div>
-    <div id="time" class="hide"></div>
+    -->
     <div id="substrate" class="hide">
         <div id="keyboard"></div>
     </div>

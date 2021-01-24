@@ -9,13 +9,16 @@ class Controller {
 
     init() {
         this.baldaView.init(this.baldaModel);
-        this.baldaModel.init(this.baldaView.removeClick, this.baldaView.addClick, this.needRendering);
+        this.baldaModel.init(this.baldaView.removeClick, this.baldaView.addClick, this.needRendering, this.start);
         this.needRendering();
     };
 
+    start = () => {
+        this.baldaView.startView(this.baldaModel);
+    }
+
     needRendering = () => {
         this.baldaView.change(this.baldaModel);
-        //this.baldaView.render(baldaModel.objs);
     };
 }
 
